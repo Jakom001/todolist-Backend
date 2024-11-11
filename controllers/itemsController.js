@@ -1,4 +1,5 @@
 const Item = require('../models/itemmodel')
+const {validateItem} = require("../middlewares/validator")
 // Get all items
 const getAllItems = async (req, res) =>{
     try {
@@ -12,15 +13,16 @@ const getAllItems = async (req, res) =>{
 
 // Add a new item
 const addItem = async (req, res) =>{
-    const {name} = req.body;
+    const {error} = validateItem(req.body);
 
-    // validate name
-    if (!name || typeof name !== 'string' || name.trim() === '') {
-        return res.status(400).json({ error: 'Name must be a non-empty string.' });
-      }
-      
+    if (error){
+        return res.status(400).json({
+            errors: error.details.map((detail) => detail.message)
+        });
+    }
+
     try{
-        const newItem = new Item({name});
+        const newItem = new Item({name:req.body.name});
         await newItem.save();
         res.status(201).json(newItem);
 
@@ -47,13 +49,15 @@ const getItemById = async (req,res) =>{
 
 // update an item
 const updateItem = async (req, res) =>{
-    const {name} = req.body;
-    // validate name
-    if(!name || typeof name !== 'string' || name.trim() === ''){
-        return res.status(400).json({error: 'Name must be a non-empty string'})
-    }
+
+    const {error} = validateItem(req.body);
+    if (error){
+        return res.status(400).json({
+            errors: error.details.map((detail) => detail.message)
+        });
+    }    
     try{
-        const item = await Item.findByIdAndUpdate(req.params.id, { name }, {new: true});
+        const item = await Item.findByIdAndUpdate(req.params.id, { name: req.body.name }, {new: true});
         
         if(item){
             res.json(item)

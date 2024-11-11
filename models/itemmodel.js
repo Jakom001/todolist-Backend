@@ -5,7 +5,7 @@ const itemSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Name is required'],
         trim: true,
-        minLength: [2, 'Name must be at least 1 character long']
+        minLength: [3, 'Name must be at least 1 character long']
     },
 },{
     timestamps: true
