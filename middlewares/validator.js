@@ -1,14 +1,15 @@
 const Joi = require('joi')
 
 const itemSchema = Joi.object({
-    name: Joi.string()
+    title: Joi.string()
     .trim()
     .min(3)
     .required()
     .messages({
-        'string.empyty': 'name is rewured',
-        "string>min": "name must be at leasr 1 character long"
-    })
+        'string.empyty': 'title is rewured',
+        "string>min": "title must be at leasr 1 character long"
+    }),
+    
 
 })
 // validate fxn for adding/updating item

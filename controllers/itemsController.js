@@ -3,8 +3,8 @@ const {validateItem} = require("../middlewares/validator")
 // Get all items
 const getAllItems = async (req, res) =>{
     try {
-        const items = await Item.find()
-        res.status(200).json({success:true, message: "all items", data: items})
+        const items = await Item.find().sort({_id: -1})
+        res.status(200).json({success:true, message: "all items", result: items})
     }catch(error){
         console.error("Error fetching items", error);
         res.status(500).json({error: "internal server error"})
@@ -22,7 +22,7 @@ const addItem = async (req, res) =>{
     }
 
     try{
-        const newItem = new Item({name:req.body.name});
+        const newItem = new Item({title:req.body.title});
         await newItem.save();
         res.status(201).json(newItem);
 
@@ -46,7 +46,24 @@ const getItemById = async (req,res) =>{
         res.status(500).json({error: "internal server error"});
     }   
 };
+// ToggleCompleted
+const toggleCompletion = async(req, res) =>{
+    try{
+        const item = await Item.findById(req.params.id);
 
+        if (item){
+            item.completed = !item.completed;
+            await item.save();
+            res.json(item);
+        }else{
+            res.status(404).json({Error: "item not found"})
+        }
+
+    }catch (error){
+        console.error("Error toggling completion", error);
+        res.status(500).json({error: "Internal server error"})
+    }
+}
 // update an item
 const updateItem = async (req, res) =>{
 
@@ -57,7 +74,7 @@ const updateItem = async (req, res) =>{
         });
     }    
     try{
-        const item = await Item.findByIdAndUpdate(req.params.id, { name: req.body.name }, {new: true});
+        const item = await Item.findByIdAndUpdate(req.params.id, { title: req.body.title }, {new: true});
         
         if(item){
             res.json(item)
@@ -86,4 +103,4 @@ const deleteItem =async (req, res) =>{
     
 }
 
-module.exports = {getAllItems, addItem, getItemById, updateItem, deleteItem}
+module.exports = {getAllItems, addItem, getItemById, updateItem, deleteItem, toggleCompletion}

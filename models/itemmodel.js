@@ -1,12 +1,17 @@
+const { required } = require('joi');
 const mongoose = require('mongoose')
 
 const itemSchema = new mongoose.Schema({
-    name:{
+    title:{
         type: String,
-        required: [true, 'Name is required'],
+        required: [true, 'title is required'],
         trim: true,
-        minLength: [3, 'Name must be at least 1 character long']
+        minLength: [3, 'title must be at least 1 character long']
     },
+    completed:{
+        type:Boolean,
+        default: false
+    }
 },{
     timestamps: true
 });
